@@ -1,0 +1,92 @@
+# ============================================================
+# Docker Compose — Demo UTS Kelompok 5
+# Network Programming & Administration
+#
+# Arsitektur sesuai topologi laporan:
+#   - Network : demo-lan (10.10.1.0/24)
+#   - Server  : 10.10.1.10 (port 12345)
+#   - Client  : 10.10.1.20
+#   - Sniffer : 10.10.1.100 (tcpdump → file .pcap untuk Wireshark)
+#   - Host    : Buka file .pcap di Wireshark
+#
+# Catatan: Subnet 10.10.1.0/24 digunakan agar tidak bentrok
+# dengan jaringan fisik host (biasanya 192.168.x.x).
+# Konsep dan arsitekturnya tetap sama dengan topologi laporan.
+# ============================================================
+
+networks:
+  demo-lan:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.1.0/24
+          gateway: 10.10.1.1
+
+services:
+  # ==========================================================
+  # SERVER — 10.10.1.10
+  # Menjalankan server (tanpa/dengan enkripsi) pada port 12345
+  # ==========================================================
+  server:
+    build: .
+    container_name: server
+    hostname: server
+    networks:
+      demo-lan:
+        ipv4_address: 10.10.1.10
+    volumes:
+      - .:/app
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+
+  # ==========================================================
+  # CLIENT — 10.10.1.20
+  # Menjalankan client (tanpa/dengan enkripsi)
+  # SERVER_HOST otomatis diatur ke IP server (10.10.1.10)
+  # ==========================================================
+  client:
+    build: .
+    container_name: client
+    hostname: client
+    networks:
+      demo-lan:
+        ipv4_address: 10.10.1.20
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - SERVER_HOST=10.10.1.10
+      - SERVER_PORT=12345
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+    depends_on:
+      - server
+
+  # ==========================================================
+  # SNIFFER — 10.10.1.100
+  # Simulasi "pihak ketiga" yang menyadap jaringan.
+  # Menangkap traffic port 12345 dan menyimpan ke file .pcap
+  # yang bisa dibuka di Wireshark pada host.
+  #
+  # Cara pakai:
+  #   docker exec sniffer tcpdump -i eth0 tcp port 12345 -w /captures/tanpa_enkripsi.pcap
+  #   docker exec sniffer tcpdump -i eth0 tcp port 12345 -w /captures/dengan_enkripsi.pcap
+  #
+  # File hasil capture otomatis muncul di folder ./captures/
+  # Buka file .pcap tersebut dengan Wireshark di host.
+  # ==========================================================
+  sniffer:
+    image: nicolaka/netshoot
+    container_name: sniffer
+    network_mode: "service:server"
+    volumes:
+      - ./captures:/captures
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+    depends_on:
+      - server
+      - client
