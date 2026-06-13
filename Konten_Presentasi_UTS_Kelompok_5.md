@@ -222,9 +222,9 @@ LANGKAH-LANGKAH DEMO:
 ```
 
 ### 🎤 Narasi Selama Demo:
-> "Wireshark sudah berjalan dengan filter tcp.port 12345. Saya jalankan server, lalu client. Pesan yang dikirim: 'Rapat dosen pukul 10:00 di Ruang Utama'. Server berhasil menampilkan pesan beserta IP client, port, dan waktu penerimaan.
+> "Untuk menangkap lalu lintas jaringan, saya menggunakan sniffer yang langsung dialirkan ke Wireshark. Saya jalankan server, lalu client. Pesan yang dikirim: 'Rapat dosen pukul 10:00 di Ruang Utama'. Server berhasil menampilkan pesan beserta IP client, port, dan waktu penerimaan.
 >
-> Sekarang lihat Wireshark — Follow TCP Stream — dan pesan terbaca jelas secara utuh! Tidak ada perlindungan apapun. Inilah bukti nyata bahwa komunikasi tanpa enkripsi sangat rentan."
+> Begitu pesan dikirim, jendela Wireshark otomatis menampilkan paket yang lewat. Mari kita Follow TCP Stream — dan lihat, pesan terbaca jelas secara utuh! Tidak ada perlindungan apapun. Inilah bukti nyata bahwa komunikasi tanpa enkripsi sangat rentan."
 
 ---
 
@@ -356,9 +356,9 @@ LANGKAH-LANGKAH DEMO:
 ```
 
 ### 🎤 Narasi Selama Demo:
-> "Server berjalan dalam mode AES-128-GCM. Saya jalankan client, ketik pesan yang sama: 'Rapat dosen pukul 10:00 di Ruang Utama'. Di terminal terlihat plaintext asli dan ciphertext yang dikirim.
+> "Sama seperti tadi, sniffer Wireshark sudah siap sedia. Server kini berjalan dalam mode AES-128-GCM. Saya jalankan client, lalu ketik pesan yang sama: 'Rapat dosen pukul 10:00 di Ruang Utama'. Di terminal terlihat plaintext asli dan ciphertext yang dikirim.
 >
-> Sekarang Wireshark — Follow TCP Stream — dan bandingkan dengan demo sebelumnya! Tadi pesan terbaca jelas, sekarang hanya deretan karakter acak Base64. Meskipun paket berhasil ditangkap, isinya tidak bisa dibaca tanpa kunci dekripsi."
+> Jendela Wireshark kembali menangkap paketnya. Mari kita Follow TCP Stream — dan bandingkan dengan demo sebelumnya! Tadi pesan terbaca jelas, sekarang hanya deretan karakter acak Base64. Meskipun paket berhasil disadap, isinya sama sekali tidak bisa dibaca tanpa kunci dekripsi."
 
 ---
 
